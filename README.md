@@ -28,7 +28,8 @@ In my environment Dependency Track data updates a lot less frequently than stand
 
 Despite this caching of the data, it is still recommended that you configure a dedicated scraper on Prometheus with a more suitable scrape interval than 15s.
 
-
+Another change between this exporter and the original is that this exporter does not use the Prometheus client library or the Dependency Track client library.
+There are two reasons for this: I think they are unnecessary for something this simple, and I dislike Go's handling of external dependencies.
 
 ## Metrics
 
