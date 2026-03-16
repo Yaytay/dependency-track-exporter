@@ -11,17 +11,19 @@ import (
 )
 
 type renderedProject struct {
-	UUID       string
-	Name       string
-	Version    string
-	Classifier string
-	Tags       string
-	Active     bool
-	Critical   int
-	High       int
-	Medium     int
-	Low        int
-	Unassigned int
+	UUID                   string
+	Name                   string
+	Version                string
+	Classifier             string
+	Tags                   string
+	Active                 bool
+	LastBomImport          int64
+	LastInheritedRiskScore float64
+	Critical               int
+	High                   int
+	Medium                 int
+	Low                    int
+	Unassigned             int
 }
 
 func boolString(v bool) string {
@@ -48,6 +50,12 @@ func WriteMetrics(w http.ResponseWriter, snapshot snapshot.Snapshot) {
 
 	b.WriteString("# HELP dependency_track_project_vulnerabilities Number of project vulnerabilities by severity.\n")
 	b.WriteString("# TYPE dependency_track_project_vulnerabilities gauge\n")
+
+	b.WriteString("# HELP dependency_track_project_last_bom_import Last BOM import date, represented as a Unix timestamp.\n")
+	b.WriteString("# TYPE dependency_track_project_last_bom_import gauge\n")
+
+	b.WriteString("# HELP dependency_track_project_inherited_risk_score Inherited risk score for a project.\n")
+	b.WriteString("# TYPE dependency_track_project_inherited_risk_score gauge\n")
 
 	projects := append([]renderedProject{}, flatten(snapshot)...)
 
@@ -77,6 +85,9 @@ func WriteMetrics(w http.ResponseWriter, snapshot snapshot.Snapshot) {
 		writeLabel(&b, "tags", p.Tags)
 		b.WriteString("} 1\n")
 
+		writeProjectIntMetric(&b, "dependency_track_project_last_bom_import", p, p.LastBomImport)
+		writeProjectFloatMetric(&b, "dependency_track_project_inherited_risk_score", p, p.LastInheritedRiskScore)
+
 		writeVulnMetric(&b, p, "critical", p.Critical)
 		writeVulnMetric(&b, p, "high", p.High)
 		writeVulnMetric(&b, p, "medium", p.Medium)
@@ -92,17 +103,19 @@ func flatten(snapshot snapshot.Snapshot) []renderedProject {
 
 	for _, p := range snapshot.Projects {
 		out = append(out, renderedProject{
-			UUID:       p.Project.UUID,
-			Name:       p.Project.Name,
-			Version:    p.Project.Version,
-			Classifier: p.Project.Classifier,
-			Active:     p.Project.Active,
-			Tags:       joinedProjectTags(p.Project.Tags),
-			Critical:   p.Counts.Critical,
-			High:       p.Counts.High,
-			Medium:     p.Counts.Medium,
-			Low:        p.Counts.Low,
-			Unassigned: p.Counts.Unassigned,
+			UUID:                   p.Project.UUID,
+			Name:                   p.Project.Name,
+			Version:                p.Project.Version,
+			Classifier:             p.Project.Classifier,
+			Active:                 p.Project.Active,
+			LastBomImport:          p.Project.LastBomImport / 1000,
+			LastInheritedRiskScore: p.Project.LastInheritedRiskScore,
+			Tags:                   joinedProjectTags(p.Project.Tags),
+			Critical:               p.Counts.Critical,
+			High:                   p.Counts.High,
+			Medium:                 p.Counts.Medium,
+			Low:                    p.Counts.Low,
+			Unassigned:             p.Counts.Unassigned,
 		})
 	}
 	return out
@@ -140,6 +153,32 @@ func writeVulnMetric(b *strings.Builder, p renderedProject, severity string, val
 	writeLabel(b, "severity", severity)
 	b.WriteString("} ")
 	b.WriteString(strconv.Itoa(value))
+	b.WriteByte('\n')
+}
+
+func writeProjectIntMetric(b *strings.Builder, metricName string, p renderedProject, value int64) {
+	b.WriteString(metricName)
+	b.WriteString("{")
+	writeLabel(b, "uuid", p.UUID)
+	b.WriteByte(',')
+	writeLabel(b, "name", p.Name)
+	b.WriteByte(',')
+	writeLabel(b, "version", p.Version)
+	b.WriteString("} ")
+	b.WriteString(strconv.FormatInt(value, 10))
+	b.WriteByte('\n')
+}
+
+func writeProjectFloatMetric(b *strings.Builder, metricName string, p renderedProject, value float64) {
+	b.WriteString(metricName)
+	b.WriteString("{")
+	writeLabel(b, "uuid", p.UUID)
+	b.WriteByte(',')
+	writeLabel(b, "name", p.Name)
+	b.WriteByte(',')
+	writeLabel(b, "version", p.Version)
+	b.WriteString("} ")
+	b.WriteString(strconv.FormatFloat(value, 'f', -1, 64))
 	b.WriteByte('\n')
 }
 
