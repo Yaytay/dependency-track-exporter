@@ -31,6 +31,7 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
+          cache: false
 
       - name: Run GoReleaser snapshot build
         uses: goreleaser/goreleaser-action@v6
