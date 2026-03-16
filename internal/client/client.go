@@ -32,24 +32,24 @@ func NewClient(baseURL, apiKey string, timeout time.Duration, logger *config.Log
 }
 
 type Project struct {
-	UUID       string            `json:"uuid"`
-	Name       string            `json:"name"`
-	Version    string            `json:"version"`
-	Classifier string            `json:"classifier"`
-	Metrics    ProjectMetrics    `json:"metrics"`
-	Tags       []ProjectTag      `json:"tags,omitempty"`
-	Properties []ProjectProperty `json:"properties,omitempty"`
+	Authors                   []ProjectAuthor   `json:"authors,omitempty"`
+	Name                      string            `json:"name"`
+	Version                   string            `json:"version"`
+	Classifier                string            `json:"classifier"`
+	CollectionLogic           string            `json:"collectionLogic"`
+	UUID                      string            `json:"uuid"`
+	Properties                []ProjectProperty `json:"properties,omitempty"`
+	Tags                      []ProjectTag      `json:"tags,omitempty"`
+	LastBomImport             int64             `json:"lastBomImport"`
+	LastBomImportFormat       string            `json:"lastBomImportFormat"`
+	LastInheritedRiskScore    float64           `json:"lastInheritedRiskScore"`
+	LastVulnerabilityAnalysis int64             `json:"lastVulnerabilityAnalysis"`
+	Active                    bool              `json:"active"`
+	IsLatest                  bool              `json:"isLatest"`
+	Metrics                   ProjectMetrics    `json:"metrics"`
 }
 
-type ProjectMetrics struct {
-	Critical   int `json:"critical"`
-	High       int `json:"high"`
-	Medium     int `json:"medium"`
-	Low        int `json:"low"`
-	Unassigned int `json:"unassigned"`
-}
-
-type ProjectTag struct {
+type ProjectAuthor struct {
 	Name string `json:"name"`
 }
 
@@ -59,6 +59,45 @@ type ProjectProperty struct {
 	PropertyValue string `json:"propertyValue"`
 	PropertyType  string `json:"propertyType"`
 	Description   string `json:"description"`
+}
+
+type ProjectTag struct {
+	Name string `json:"name"`
+}
+
+type ProjectMetrics struct {
+	Critical                             int     `json:"critical"`
+	High                                 int     `json:"high"`
+	Medium                               int     `json:"medium"`
+	Low                                  int     `json:"low"`
+	Unassigned                           int     `json:"unassigned"`
+	Vulnerabilities                      int     `json:"vulnerabilities"`
+	VulnerableComponents                 int     `json:"vulnerableComponents"`
+	Components                           int     `json:"components"`
+	Suppressed                           int     `json:"suppressed"`
+	FindingsTotal                        int     `json:"findingsTotal"`
+	FindingsAudited                      int     `json:"findingsAudited"`
+	FindingsUnaudited                    int     `json:"findingsUnaudited"`
+	InheritedRiskScore                   float64 `json:"inheritedRiskScore"`
+	PolicyViolationsFail                 int     `json:"policyViolationsFail"`
+	PolicyViolationsWarn                 int     `json:"policyViolationsWarn"`
+	PolicyViolationsInfo                 int     `json:"policyViolationsInfo"`
+	PolicyViolationsTotal                int     `json:"policyViolationsTotal"`
+	PolicyViolationsAudited              int     `json:"policyViolationsAudited"`
+	PolicyViolationsUnaudited            int     `json:"policyViolationsUnaudited"`
+	PolicyViolationsSecurityTotal        int     `json:"policyViolationsSecurityTotal"`
+	PolicyViolationsSecurityAudited      int     `json:"policyViolationsSecurityAudited"`
+	PolicyViolationsSecurityUnaudited    int     `json:"policyViolationsSecurityUnaudited"`
+	PolicyViolationsLicenseTotal         int     `json:"policyViolationsLicenseTotal"`
+	PolicyViolationsLicenseAudited       int     `json:"policyViolationsLicenseAudited"`
+	PolicyViolationsLicenseUnaudited     int     `json:"policyViolationsLicenseUnaudited"`
+	PolicyViolationsOperationalTotal     int     `json:"policyViolationsOperationalTotal"`
+	PolicyViolationsOperationalAudited   int     `json:"policyViolationsOperationalAudited"`
+	PolicyViolationsOperationalUnaudited int     `json:"policyViolationsOperationalUnaudited"`
+	CollectionLogic                      string  `json:"collectionLogic"`
+	CollectionLogicChanged               bool    `json:"collectionLogicChanged"`
+	FirstOccurrence                      int64   `json:"firstOccurrence"`
+	LastOccurrence                       int64   `json:"lastOccurrence"`
 }
 
 type VulnerabilityCounts struct {

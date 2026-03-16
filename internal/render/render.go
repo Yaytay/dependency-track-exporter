@@ -16,11 +16,19 @@ type renderedProject struct {
 	Version    string
 	Classifier string
 	Tags       string
+	Active     bool
 	Critical   int
 	High       int
 	Medium     int
 	Low        int
 	Unassigned int
+}
+
+func boolString(v bool) string {
+	if v {
+		return "1"
+	}
+	return "0"
 }
 
 func WriteMetrics(w http.ResponseWriter, snapshot snapshot.Snapshot) {
@@ -54,6 +62,7 @@ func WriteMetrics(w http.ResponseWriter, snapshot snapshot.Snapshot) {
 	})
 
 	for _, p := range projects {
+
 		b.WriteString("dependency_track_project_info{")
 		writeLabel(&b, "uuid", p.UUID)
 		b.WriteByte(',')
@@ -62,6 +71,8 @@ func WriteMetrics(w http.ResponseWriter, snapshot snapshot.Snapshot) {
 		writeLabel(&b, "version", p.Version)
 		b.WriteByte(',')
 		writeLabel(&b, "classifier", p.Classifier)
+		b.WriteByte(',')
+		writeLabel(&b, "active", boolString(p.Active))
 		b.WriteByte(',')
 		writeLabel(&b, "tags", p.Tags)
 		b.WriteString("} 1\n")
@@ -85,6 +96,7 @@ func flatten(snapshot snapshot.Snapshot) []renderedProject {
 			Name:       p.Project.Name,
 			Version:    p.Project.Version,
 			Classifier: p.Project.Classifier,
+			Active:     p.Project.Active,
 			Tags:       joinedProjectTags(p.Project.Tags),
 			Critical:   p.Counts.Critical,
 			High:       p.Counts.High,
