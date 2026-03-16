@@ -27,11 +27,6 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Set lowercase repository owner
-        shell: bash
-        run: |
-          echo "GITHUB_REPOSITORY_OWNER_LOWER=${GITHUB_REPOSITORY_OWNER,,}" >> "$GITHUB_ENV"
-
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
@@ -43,4 +38,5 @@ jobs:
           version: latest
           args: release --snapshot --clean --skip=publish
         env:
-          GITHUB_REPOSITORY_OWNER_LOWER: ${{ env.GITHUB_REPOSITORY_OWNER_LOWER }}
+          GITHUB_REPOSITORY_OWNER: ${{ env.GITHUB_REPOSITORY_OWNER }}
+
