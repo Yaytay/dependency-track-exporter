@@ -35,7 +35,7 @@ jobs:
       - name: Run GoReleaser snapshot build
         uses: goreleaser/goreleaser-action@v6
         with:
-          version: latest
+          version: v2.14.3
           args: release --snapshot --clean --skip=publish
         env:
           GITHUB_REPOSITORY_OWNER: ${{ env.GITHUB_REPOSITORY_OWNER }}
