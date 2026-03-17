@@ -88,11 +88,11 @@ func WriteMetrics(w http.ResponseWriter, snapshot snapshot.Snapshot) {
 		writeProjectIntMetric(&b, "dependency_track_project_last_bom_import", p, p.LastBomImport)
 		writeProjectFloatMetric(&b, "dependency_track_project_inherited_risk_score", p, p.LastInheritedRiskScore)
 
-		writeVulnMetric(&b, p, "critical", p.Critical)
-		writeVulnMetric(&b, p, "high", p.High)
-		writeVulnMetric(&b, p, "medium", p.Medium)
-		writeVulnMetric(&b, p, "low", p.Low)
-		writeVulnMetric(&b, p, "unassigned", p.Unassigned)
+		writeVulnMetric(&b, p, "CRITICAL", p.Critical)
+		writeVulnMetric(&b, p, "HIGH", p.High)
+		writeVulnMetric(&b, p, "MEDIUM", p.Medium)
+		writeVulnMetric(&b, p, "LOW", p.Low)
+		writeVulnMetric(&b, p, "UNASSIGNED", p.Unassigned)
 	}
 
 	_, _ = w.Write([]byte(b.String()))
