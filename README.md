@@ -41,3 +41,11 @@ If you want more metrics please feel free to submit a PR, or an issue.
 * `dependency_track_projects_total` Total number of projects in the Dependency Track instance.
 * `dependency_track_components_total` Total number of components in the Dependency Track instance.
 * `dependency_track_vulnerabilities_total` Total number of vulnerabilities in the Dependency Track instance.
+
+## Compatibility
+
+This exporter has been tested with:
+* Dependency-Track v4.14.x (maintenance mode)
+* Dependency-Track v5.x (active development)
+
+The exporter uses the `/api/v1/` REST API endpoints which are supported in both versions.
